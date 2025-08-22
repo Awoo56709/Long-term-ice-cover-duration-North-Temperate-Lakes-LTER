@@ -86,78 +86,34 @@ ggplot(mean_ice_by_year, aes(x = year4, y = mean_ice_duration)) +
     y = "Mean Ice Duration (days)"
   )
 ```
+```{r}
+data.class(meteor_data$month)
+```
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Understanding check: 
-# You’re finding the average of *all lake-year ice durations* in Madison Lake Area.
-# Multiple observations exist per year because there are several lakes.
-
-# --- 4. Exploratory visualization: mean ice cover duration by year ---
-ggplot(mean_ice_by_year, aes(x = year, y = mean_ice_duration)) +
-  geom_line(color = "darkblue") +
-  geom_point(color = "darkblue") +
-  theme_minimal() +
-  labs(
-    title = "Mean Ice Cover Duration by Year – Madison Lake Area",
-    x = "Year",
-    y = "Mean Ice Duration (days)"
-  )
-
-# Observed trend: Ice duration appears to decrease gradually over time,
-# with some year-to-year variability.
-
-# --- 5. Mean winter air temperature (DJF) by year ---
-met_madison <- met %>%
-  filter(lake_group == "Madison Lake Area") %>%
-  mutate(month = month(date)) %>%
+```{r}
+#find the mean air temp 
+meteor_madison <- meteor_data %>%
+  #mutate(month = month(date)) %>%
   filter(month %in% c(12, 1, 2))
 
-mean_temp_by_year <- met_madison %>%
-  group_by(year = year(date)) %>%
-  summarise(mean_winter_temp = mean(air_temp_adj, na.rm = TRUE),
+mean_temp_by_year <- meteor_madison %>%
+  group_by(year4) %>%
+  summarise(mean_winter_temp = mean(ave_air_temp_adjusted, na.rm = TRUE),
             .groups = "drop")
 
-# --- 6. Exploratory visualization: mean winter temperature by year ---
-ggplot(mean_temp_by_year, aes(x = year, y = mean_winter_temp)) +
-  geom_line(color = "firebrick") +
-  geom_point(color = "firebrick") +
+
+meteor_madison
+```
+
+
+
+```{r}
+ggplot(mean_temp_by_year, aes(x = year4, y = mean_winter_temp)) +
+  geom_line(color = "red") +
+  geom_point(color = "red") +
   theme_minimal() +
   labs(
     title = "Mean Winter Air Temperature by Year – Madison Lake Area",
@@ -165,15 +121,16 @@ ggplot(mean_temp_by_year, aes(x = year, y = mean_winter_temp)) +
     y = "Mean Temp (°C)"
   )
 
-# Observed trend: Winter temperatures show a mild warming trend over the study period.
+```
 
+```{r}
 # --- 7. Join mean temp to mean ice duration ---
 ice_temp_joined <- mean_ice_by_year %>%
-  inner_join(mean_temp_by_year, by = "year")
+  inner_join(mean_temp_by_year, by = "year4")
 
 # --- 8. Scatterplot: temp vs ice duration ---
 ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
-  geom_point(color = "purple", alpha = 0.7) +
+  geom_point(color = "lightblue", alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
   theme_minimal() +
   labs(
@@ -181,6 +138,61 @@ ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
     x = "Mean Winter Temp (°C)",
     y = "Mean Ice Duration (days)"
   )
+```
+
+
+```{r}
+ice_since_1970 <- ice_madison %>%
+  filter(year4 >= 1970) %>%
+  mutate(ice_off_date = ymd(ice_off),
+         ice_off_date = yday(ice_off_date))
+
+ggplot(ice_since_1970, aes(x = year4, y = ice_off_date)) +
+  geom_point(alpha = 0.6, color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Ice-Off Day of Year (1970–present)",
+    x = "Year",
+    y = "Day of Year (Ice-Off)"
+  )
+
+# Observed trend: Thaw dates have shifted earlier in the calendar year over time.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Observed trend: Higher winter temps are associated with shorter ice durations.
 
