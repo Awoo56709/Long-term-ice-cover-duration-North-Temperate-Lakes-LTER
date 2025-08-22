@@ -53,8 +53,10 @@ ice_madison <- ice_madison_me %>%
 ice_madison_mean
 ```
 ```{r}
+#creating a boxplot of the ice duration based on location.
 ggplot(ice_madison, aes(x = lakeid, y = ice_duration)) +
   geom_jitter(width = 0.2, alpha = 0.5, color = "steelblue") +
+  #removing NA values
   geom_boxplot(outlier.shape = NA, fill = NA, color = "black") +
   theme_minimal() +
   labs(
@@ -76,6 +78,7 @@ mean_ice_by_year
 ```
 
 ```{r}
+#creating a scatterplot based on years and mean ice duration
 ggplot(mean_ice_by_year, aes(x = year4, y = mean_ice_duration)) +
   geom_line(color = "darkblue") +
   geom_point(color = "darkblue") +
@@ -124,11 +127,11 @@ ggplot(mean_temp_by_year, aes(x = year4, y = mean_winter_temp)) +
 ```
 
 ```{r}
-# --- 7. Join mean temp to mean ice duration ---
+# Join mean temp to mean ice duration
 ice_temp_joined <- mean_ice_by_year %>%
   inner_join(mean_temp_by_year, by = "year4")
 
-# --- 8. Scatterplot: temp vs ice duration ---
+# Scatterplot
 ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
   geom_point(color = "lightblue", alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
@@ -139,7 +142,7 @@ ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
     y = "Mean Ice Duration (days)"
   )
 ```
-
+# Based on this graph, it shows that over the years, both mean winter temperatures and duration has has decreased. In other words, the length of duration has decrerased but temperatures have intensified.
 
 ```{r}
 ice_since_1970 <- ice_madison %>%
@@ -160,87 +163,7 @@ ggplot(ice_since_1970, aes(x = year4, y = ice_off_date)) +
 # Observed trend: Thaw dates have shifted earlier in the calendar year over time.
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Observed trend: Higher winter temps are associated with shorter ice durations.
-
-# --- 9. Thaw dates since 1970 ---
-ice_since_1970 <- ice_madison %>%
-  filter(year >= 1970) %>%
-  mutate(ice_off_date = ymd(ice_off),
-         ice_off_doy = yday(ice_off_date))
-
-ggplot(ice_since_1970, aes(x = year, y = ice_off_doy)) +
-  geom_point(alpha = 0.6, color = "darkgreen") +
-  geom_smooth(method = "lm", se = FALSE, color = "black") +
-  theme_minimal() +
-  labs(
-    title = "Ice-Off Day of Year (1970–present)",
-    x = "Year",
-    y = "Day of Year (Ice-Off)"
-  )
-
-# Observed trend: Thaw dates have shifted earlier in the calendar year over time.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#This graph depicts that since the 1970s the days of "ice-off" have been decreasing. This 
 
 
 
