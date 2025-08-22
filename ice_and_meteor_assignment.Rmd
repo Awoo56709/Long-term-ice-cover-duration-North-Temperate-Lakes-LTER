@@ -1,0 +1,235 @@
+---
+title: "eds221_day10_afternoon_activity"
+author: "Joshua Ferrer-Lozano"
+date: "2025-08-22"
+output: html_document
+---
+
+```{r}
+#installing packages
+library(tidyverse)
+library(lubridate)
+```
+
+
+```{r}
+meteor_data <- read.csv(here::here("data", "ntl20_v6.csv"))
+ice_cover_data <- read.csv(here::here("data", "ntl33_v7.csv"))
+```
+```{r}
+head(ice_cover_data)
+```
+```{r}
+head(meteor_data)
+```
+
+```{r}
+#removing the NAs
+ice_cover_data <- na.omit(ice_cover_data)
+#ice_madison_clean
+```
+```{r}
+#creating a  subset of only the lake id of ME lake
+ice_madison_me <- ice_cover_data %>% 
+  filter(lakeid == "ME")
+
+#ploting the data in a boxplot
+ggplot(ice_madison_me, aes(x = lakeid, y = ice_duration)) +
+  geom_jitter(width = 0.2, alpha = 0.5, color = "steelblue") +
+  geom_boxplot(outlier.shape = NA, fill = NA, color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Ice Cover Duration by Lake",
+    x = "Lake",
+    y = "Ice Duration (days)"
+  )
+```
+
+```{r}
+#finding the ice duration in the madison lake area
+ice_madison <- ice_madison_me %>%
+  filter(lakeid == "ME")
+
+ice_madison_mean
+```
+```{r}
+ggplot(ice_madison, aes(x = lakeid, y = ice_duration)) +
+  geom_jitter(width = 0.2, alpha = 0.5, color = "steelblue") +
+  geom_boxplot(outlier.shape = NA, fill = NA, color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Ice Cover Duration by Lake",
+    x = "Lake",
+    y = "Ice Duration (days)"
+  )
+```
+
+```{r}
+#mean of the ice cover
+mean_ice_by_year <- ice_madison %>%
+  group_by(year4) %>%
+  summarise(mean_ice_duration = mean(ice_duration, na.rm = TRUE),
+            .groups = "drop")
+
+mean_ice_by_year
+
+```
+
+```{r}
+ggplot(mean_ice_by_year, aes(x = year4, y = mean_ice_duration)) +
+  geom_line(color = "darkblue") +
+  geom_point(color = "darkblue") +
+  theme_minimal() +
+  labs(
+    title = "Mean Ice Cover Duration by Year – Madison Lake Area",
+    x = "Year",
+    y = "Mean Ice Duration (days)"
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Understanding check: 
+# You’re finding the average of *all lake-year ice durations* in Madison Lake Area.
+# Multiple observations exist per year because there are several lakes.
+
+# --- 4. Exploratory visualization: mean ice cover duration by year ---
+ggplot(mean_ice_by_year, aes(x = year, y = mean_ice_duration)) +
+  geom_line(color = "darkblue") +
+  geom_point(color = "darkblue") +
+  theme_minimal() +
+  labs(
+    title = "Mean Ice Cover Duration by Year – Madison Lake Area",
+    x = "Year",
+    y = "Mean Ice Duration (days)"
+  )
+
+# Observed trend: Ice duration appears to decrease gradually over time,
+# with some year-to-year variability.
+
+# --- 5. Mean winter air temperature (DJF) by year ---
+met_madison <- met %>%
+  filter(lake_group == "Madison Lake Area") %>%
+  mutate(month = month(date)) %>%
+  filter(month %in% c(12, 1, 2))
+
+mean_temp_by_year <- met_madison %>%
+  group_by(year = year(date)) %>%
+  summarise(mean_winter_temp = mean(air_temp_adj, na.rm = TRUE),
+            .groups = "drop")
+
+# --- 6. Exploratory visualization: mean winter temperature by year ---
+ggplot(mean_temp_by_year, aes(x = year, y = mean_winter_temp)) +
+  geom_line(color = "firebrick") +
+  geom_point(color = "firebrick") +
+  theme_minimal() +
+  labs(
+    title = "Mean Winter Air Temperature by Year – Madison Lake Area",
+    x = "Year",
+    y = "Mean Temp (°C)"
+  )
+
+# Observed trend: Winter temperatures show a mild warming trend over the study period.
+
+# --- 7. Join mean temp to mean ice duration ---
+ice_temp_joined <- mean_ice_by_year %>%
+  inner_join(mean_temp_by_year, by = "year")
+
+# --- 8. Scatterplot: temp vs ice duration ---
+ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
+  geom_point(color = "purple", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Mean Winter Temp vs. Mean Ice Duration",
+    x = "Mean Winter Temp (°C)",
+    y = "Mean Ice Duration (days)"
+  )
+
+# Observed trend: Higher winter temps are associated with shorter ice durations.
+
+# --- 9. Thaw dates since 1970 ---
+ice_since_1970 <- ice_madison %>%
+  filter(year >= 1970) %>%
+  mutate(ice_off_date = ymd(ice_off),
+         ice_off_doy = yday(ice_off_date))
+
+ggplot(ice_since_1970, aes(x = year, y = ice_off_doy)) +
+  geom_point(alpha = 0.6, color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Ice-Off Day of Year (1970–present)",
+    x = "Year",
+    y = "Day of Year (Ice-Off)"
+  )
+
+# Observed trend: Thaw dates have shifted earlier in the calendar year over time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
