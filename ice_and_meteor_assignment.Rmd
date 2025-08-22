@@ -131,7 +131,7 @@ ggplot(mean_temp_by_year, aes(x = year4, y = mean_winter_temp)) +
 ice_temp_joined <- mean_ice_by_year %>%
   inner_join(mean_temp_by_year, by = "year4")
 
-# Scatterplot
+# Creating a scatterplot based on mean winter temps and ice duration
 ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
   geom_point(color = "lightblue", alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "black") +
@@ -142,7 +142,7 @@ ggplot(ice_temp_joined, aes(x = mean_winter_temp, y = mean_ice_duration)) +
     y = "Mean Ice Duration (days)"
   )
 ```
-# Based on this graph, it shows that over the years, both mean winter temperatures and duration has has decreased. In other words, the length of duration has decrerased but temperatures have intensified.
+# Based on this graph, it shows that over the years, both mean winter temperatures and duration has decreased. In other words, the length of duration has decreased but temperatures have intensified (went down). Also, Thaw dates have shifted earlier in the calendar year over time.
 
 ```{r}
 ice_since_1970 <- ice_madison %>%
@@ -160,10 +160,9 @@ ggplot(ice_since_1970, aes(x = year4, y = ice_off_date)) +
     y = "Day of Year (Ice-Off)"
   )
 
-# Observed trend: Thaw dates have shifted earlier in the calendar year over time.
 ```
 
-#This graph depicts that since the 1970s the days of "ice-off" have been decreasing. This 
+#This graph depicts that since the 1970s the days of "ice-off" have been decreasing.
 
 
 
